@@ -3,6 +3,14 @@ Feature: "Who's New" Block
   As an administrator
   I want a listing of the newest user accounts on the homepage.
 
+
+  @api
+  Scenario: New user appears in list
+    Given I am logged in as an "administrator"
+    And a new user account has recently been created
+    When I go to the homepage
+    Then I should see the username for the new account in the Who's New Block.
+
   @api
   Scenario: New user appears in list (poor abstraction)
     Given I am logged in as an "administrator"

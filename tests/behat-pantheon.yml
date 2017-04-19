@@ -19,3 +19,6 @@ default:
     Drupal\DrupalExtension:
       blackbox: ~
       api_driver: 'drush'
+      subcontexts:
+        paths:
+          - "subcontexts"
