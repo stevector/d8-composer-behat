@@ -8,6 +8,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use Drupal\DrupalExtension\Context\DrupalSubContextBase;
 use Drupal\DrupalExtension\Context\DrupalSubContextInterface;
+use Behat\Behat\Hook\Scope\BeforeStepScope;
 
 /**
  * Example subcontext.
@@ -39,10 +40,10 @@ class PresentationExamples extends DrupalSubContextBase implements DrupalSubCont
    */
   public function aNewUserAccountHasRecentlyBeenCreated()
   {
-    $this->newly_created_username = rand();
+    $this->newly_created_username = "Who New " . rand(0, 10);
     $user = new StdClass();
     $user->name = $this->newly_created_username;
-    $user->mail = $user->name . '@example.com';
+    $user->mail = rand() . '@example.com';
     $user->pass = rand();
 
     $this->drupalContext->userCreate($user);
@@ -55,5 +56,47 @@ class PresentationExamples extends DrupalSubContextBase implements DrupalSubCont
   {
     $this->minkContext->assertElementContainsText("#block-views-block-who-s-new-block-1", $this->newly_created_username);
   }
+
+
+  /**
+   * @BeforeStep
+   */
+  public function afterStep(BeforeStepScope $scope)
+  {
+    if (!empty(getenv('BEHAT_PRESENTATION_MODE'))) {
+      $this->drupalContext->iPutABreakpoint();
+    }
+
+  }
+
+  /**
+   * @BeforeScenario
+   */
+  public function clearUsers(BeforeScenarioScope $scope)
+  {
+
+    if (!empty(getenv('BEHAT_PRESENTATION_MODE'))) {
+      $this->drupalContext->iPutABreakpoint();
+      $arguments = array(sprintf('"%s"', "select name from users_field_data"));
+      $users = $this->drupalContext->getDriver()->drush("sqlq", $arguments);
+      $users = explode("\n", $users);
+
+
+      foreach($users as $username) {
+
+
+        if (!empty($username) && $username != 'admin') {
+          $user = new StdClass();
+          $user->name = $username;
+         $users = $this->drupalContext->getDriver()->userDelete($user);
+
+
+        }
+      }
+
+    }
+
+  }
+
 }
 
