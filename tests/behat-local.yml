@@ -16,9 +16,12 @@ default:
       goutte: ~
       selenium2: ~
       files_path: './data-files'
+      base_url: http://127.0.0.1:8888
     Drupal\DrupalExtension:
       blackbox: ~
       api_driver: 'drush'
+      drush:
+        root: ../web
       subcontexts:
         paths:
           - "subcontexts"
